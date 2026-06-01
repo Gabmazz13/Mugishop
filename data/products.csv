@@ -1,8 +1,0 @@
-ProductID,Category,Name,Size,UnitCost,UnitPrice
-C20X30,Cuadros,Cuadro metalico 20x30,20x30,15.00,30.00
-C30X60,Cuadros,Cuadro metalico 30x60,30x60,25.00,50.00
-C40X60,Cuadros,Cuadro metalico 40x60,40x60,30.00,60.00
-C20X15,Cuadros,Cuadro metalico 20x15,20x15,10.00,20.00
-IM_RED,Imanes,Iman redondo grande,Ø3cm,0.20,1.00
-IM_MED,Imanes,Iman redondo mediano,Ø2cm,0.10,0.60
-LEGOS,Otros,Set Legos pequeño,varios,5.00,12.00
