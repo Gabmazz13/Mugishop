@@ -1,9 +1,11 @@
 // Simple SPA using localStorage
 const STORAGE_KEY = 'mugi_data_v1';
-let state = {products:[], fixedCosts:[], variableCosts:[], settings:{defaultMargin:30, defaultFixedShare:10, stockThreshold:2}};
+const AUTH_KEY = 'mugi_auth_v1';
+let state = {products:[], fixedCosts:[], variableCosts:[], settings:{defaultMargin:30, defaultFixedShare:10, stockThreshold:2}, auth:{loggedIn:false}};
 
-function save(){localStorage.setItem(STORAGE_KEY, JSON.stringify(state));}
-function load(){const v=localStorage.getItem(STORAGE_KEY);if(v){state=JSON.parse(v);}else{seed();save();}}
+function save(){localStorage.setItem(STORAGE_KEY, JSON.stringify(state));localStorage.setItem(AUTH_KEY, JSON.stringify(state.auth));}
+function load(){const v=localStorage.getItem(STORAGE_KEY);if(v){state=JSON.parse(v);}else{seed();save();}
+ const auth=localStorage.getItem(AUTH_KEY);state.auth=auth?JSON.parse(auth):{loggedIn:false};}
 
 function seed(){state.products=[
   {productId:'LAM20B',name:'Lamina aluminio 20x30 blanca',size:'20x30',unitCost:5.49,unitPrice:12,stockAvailable:20,stockIdeal:40,fixedCostShare:2,targetMargin:30},
@@ -13,13 +15,18 @@ state.fixedCosts=[{item:'Ferias',monthlyCost:600,notes:'Ferias y eventos'}];
 state.variableCosts=[];
 }
 
+function toggleMenu(open){const menu = document.getElementById('sideMenu');if(open){menu.classList.add('open');menu.setAttribute('aria-hidden','false');}else{menu.classList.remove('open');menu.setAttribute('aria-hidden','true');}}
+function updateAuthUi(){const loginButton = document.getElementById('loginButton'); const menuToggle = document.getElementById('menuToggle'); if(state.auth.loggedIn){loginButton.textContent='Cerrar sesión'; menuToggle.style.display='inline-flex'; document.body.classList.add('auth-active');} else {loginButton.textContent='Iniciar sesión'; menuToggle.style.display='none'; document.body.classList.remove('auth-active'); toggleMenu(false);}}
+function showPrivatePage(){const loggedIn = state.auth.loggedIn; const loginPanel = document.getElementById('loginPanel'); const privateData = document.getElementById('privateData'); if(loggedIn){loginPanel.style.display='none';privateData.style.display='block';} else {loginPanel.style.display='block';privateData.style.display='none';}}
+
 // DOM helpers
 function $(sel,root=document) {return root.querySelector(sel);} 
 function $all(sel,root=document){return Array.from(root.querySelectorAll(sel));}
 
 // Tabs
 $all('nav button').forEach(btn=>btn.addEventListener('click',()=>{ $all('nav button').forEach(b=>b.classList.remove('active')); btn.classList.add('active'); showTab(btn.dataset.tab);}));
-function showTab(name){ $all('.tab').forEach(t=>t.style.display='none'); $(`#${name}`).style.display='block'; }
+function showTab(name){ if(name !== 'private' && !state.auth.loggedIn){ alert('Necesitas iniciar sesión para acceder a esta área.'); name = 'private'; $all('nav button').forEach(b=>b.classList.remove('active')); $all('nav button[data-tab="private"]').forEach(b=>b.classList.add('active')); }
+  $all('.tab').forEach(t=>t.style.display='none'); if(name==='private'){showPrivatePage();} $(`#${name}`).style.display='block'; toggleMenu(false); }
 
 // Products
 function renderProducts(){const tbody=$('#productsTable tbody');tbody.innerHTML='';state.products.forEach(p=>{const tr=document.createElement('tr');tr.innerHTML=`<td>${p.productId}</td><td>${p.name}</td><td>${p.size||''}</td><td>${p.unitCost||0}</td><td>${p.unitPrice||0}</td><td>${p.stockAvailable||0}</td><td>${p.stockIdeal||0}</td><td><button data-id="${p.productId}" class="edit">Editar</button> <button data-id="${p.productId}" class="del">Borrar</button></td>`;tbody.appendChild(tr);} );
@@ -55,8 +62,16 @@ $('#refreshPricing').addEventListener('click',()=>renderPricing());
 // Combos
 document.getElementById('comboForm').addEventListener('submit',e=>{e.preventDefault();const ids=$('#comboIds').value.split(',').map(s=>s.trim()).filter(Boolean);let qtys=$('#comboQtys').value.split(',').map(s=>parseFloat(s.trim())||1);while(qtys.length<ids.length) qtys.push(1);const discount=parseFloat($('#comboDiscount').value)||0;let totalCost=0;let totalSuggested=0;let lines=[];ids.forEach((id,i)=>{const p=state.products.find(x=>x.productId===id);if(!p) return;const qty=qtys[i]||1;const fixedShare=parseFloat(p.fixedCostShare||state.settings.defaultFixedShare)||0;const margin=parseFloat(p.targetMargin||state.settings.defaultMargin)||30;const cost=parseFloat(p.unitCost)||0;const suggested=(cost+fixedShare)*(1+margin/100);totalCost+=(cost+fixedShare)*qty;totalSuggested+=suggested*qty;lines.push(`${qty} x ${p.name} @ $${suggested.toFixed(2)}`);} );const bundlePrice=totalSuggested*(1-discount/100);const bundleProfit=bundlePrice-totalCost;$('#comboResult').textContent=`Productos:\n${lines.join('\n')}\n\nCosto total: $${totalCost.toFixed(2)}\nPrecio sin descuento: $${totalSuggested.toFixed(2)}\nDescuento: ${discount}%\nPrecio final: $${bundlePrice.toFixed(2)}\nGanancia estimada: $${bundleProfit.toFixed(2)}`;});
 
+// Auth and menu controls
+document.getElementById('menuToggle').addEventListener('click',()=>toggleMenu(true));
+document.getElementById('closeMenu').addEventListener('click',()=>toggleMenu(false));
+document.getElementById('loginButton').addEventListener('click',()=>{if(state.auth.loggedIn){state.auth.loggedIn=false;save();updateAuthUi();showPrivatePage();alert('Sesión cerrada');} else {showTab('private'); $all('nav button').forEach(b=>b.classList.remove('active')); $all('nav button[data-tab="private"]').forEach(b=>b.classList.add('active'));}}
+);
+document.getElementById('loginForm').addEventListener('submit',e=>{e.preventDefault();const username=e.target.username.value.trim();const password=e.target.password.value.trim();if(username==='Mugishop' && password==='JoseJoseYPimpinela'){state.auth.loggedIn=true;save();updateAuthUi();showPrivatePage();$all('nav button').forEach(b=>b.classList.remove('active')); $all('nav button[data-tab="products"]').forEach(b=>b.classList.add('active'));showTab('products');alert('Acceso concedido');} else {alert('Usuario o contraseña incorrectos');}});
+document.getElementById('logoutButton').addEventListener('click',()=>{state.auth.loggedIn=false;save();updateAuthUi();showPrivatePage();$all('nav button').forEach(b=>b.classList.remove('active')); $all('nav button[data-tab="private"]').forEach(b=>b.classList.add('active'));showTab('private');alert('Has cerrado sesión');});
+
 // Init
-load();renderProducts();renderInventory();renderCosts();renderSettings();renderPricing();showTab('products');
+load();renderProducts();renderInventory();renderCosts();renderSettings();renderPricing();updateAuthUi();showTab('private');
 
 // expose for debugging
 window.mugiState=state;

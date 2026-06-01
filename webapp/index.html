@@ -8,15 +8,41 @@
 </head>
 <body>
   <header>
-    <h1>Mugi - Inventario y Pricing</h1>
+    <div class="header-left">
+      <h1>Mugi - Inventario y Pricing</h1>
+      <nav id="mainNav">
+        <button data-tab="products">Productos</button>
+        <button data-tab="inventory">Inventario</button>
+        <button data-tab="costs">Costos</button>
+        <button data-tab="pricing">Pricing</button>
+        <button data-tab="combos">Combos</button>
+        <button data-tab="private">Privado</button>
+      </nav>
+    </div>
+    <button id="menuToggle" class="menu-toggle" aria-label="Abrir menú">
+      <span></span>
+      <span></span>
+      <span></span>
+    </button>
+  </header>
+
+  <aside id="sideMenu" class="side-menu" aria-hidden="true">
+    <div class="side-menu-header">
+      <strong>Menú</strong>
+      <button id="closeMenu" class="close-menu" aria-label="Cerrar menú">×</button>
+    </div>
     <nav>
-      <button data-tab="products" class="active">Productos</button>
+      <button data-tab="products">Productos</button>
       <button data-tab="inventory">Inventario</button>
       <button data-tab="costs">Costos</button>
       <button data-tab="pricing">Pricing</button>
       <button data-tab="combos">Combos</button>
+      <button data-tab="private">Privado</button>
     </nav>
-  </header>
+    <div class="side-menu-footer">
+      <button id="loginButton">Iniciar sesión</button>
+    </div>
+  </aside>
 
   <main>
     <section id="products" class="tab">
@@ -85,6 +111,31 @@
         <button>Calcular combo</button>
       </form>
       <pre id="comboResult"></pre>
+    </section>
+
+    <section id="private" class="tab" style="display:none">
+      <h2>Inicio de sesión</h2>
+      <div id="privateContent">
+        <div id="loginPanel">
+          <p>Introduce tus credenciales para acceder a la aplicación privada.</p>
+          <form id="loginForm">
+            <input name="username" placeholder="Usuario" required />
+            <input name="password" type="password" placeholder="Contraseña" required />
+            <button type="submit">Iniciar sesión</button>
+          </form>
+        </div>
+        <div id="privateData" style="display:none">
+          <h3>Datos privados de la marca</h3>
+          <p>Nombre de la marca: <strong>Mugi Premium</strong></p>
+          <p>Información reservada para el equipo interno.</p>
+          <ul>
+            <li>Proyección de ventas anual: 24% de crecimiento.</li>
+            <li>Proveedores clave con acceso prioritario.</li>
+            <li>Segmentos de producto con márgenes premium.</li>
+          </ul>
+          <button id="logoutButton">Cerrar sesión</button>
+        </div>
+      </div>
     </section>
   </main>
 
