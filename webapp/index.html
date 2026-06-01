@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Mugi - Inventario y Pricing</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header>
+    <h1>Mugi - Inventario y Pricing</h1>
+    <nav>
+      <button data-tab="products" class="active">Productos</button>
+      <button data-tab="inventory">Inventario</button>
+      <button data-tab="costs">Costos</button>
+      <button data-tab="pricing">Pricing</button>
+      <button data-tab="combos">Combos</button>
+    </nav>
+  </header>
+
+  <main>
+    <section id="products" class="tab">
+      <h2>Productos</h2>
+      <form id="productForm">
+        <input name="productId" placeholder="ProductID (ej: LAM20B)" required />
+        <input name="name" placeholder="Nombre" required />
+        <input name="size" placeholder="Tamaño" />
+        <input name="unitCost" placeholder="Costo unitario" type="number" step="0.01" />
+        <input name="unitPrice" placeholder="Precio sugerido" type="number" step="0.01" />
+        <input name="stockAvailable" placeholder="Stock disponible" type="number" />
+        <input name="stockIdeal" placeholder="Stock ideal" type="number" />
+        <input name="fixedCostShare" placeholder="Costo fijo por unidad" type="number" step="0.01" />
+        <input name="targetMargin" placeholder="Margen %" type="number" />
+        <button type="submit">Agregar / Actualizar</button>
+      </form>
+      <table id="productsTable">
+        <thead><tr><th>ID</th><th>Nombre</th><th>Size</th><th>Costo</th><th>Precio</th><th>Stock</th><th>Ideal</th><th>Acciones</th></tr></thead>
+        <tbody></tbody>
+      </table>
+    </section>
+
+    <section id="inventory" class="tab" style="display:none">
+      <h2>Inventario</h2>
+      <button id="refreshInventory">Actualizar inventario</button>
+      <table id="inventoryTable"><thead><tr><th>ID</th><th>Nombre</th><th>Stock</th><th>Ideal</th><th>A ordenar</th></tr></thead><tbody></tbody></table>
+    </section>
+
+    <section id="costs" class="tab" style="display:none">
+      <h2>Costos</h2>
+      <div class="costs-grid">
+        <div>
+          <h3>Costos fijos (mensual)</h3>
+          <form id="fixedForm"><input name="item" placeholder="Item" required /><input name="monthlyCost" placeholder="Costo" type="number" step="0.01" required /><button>Agregar</button></form>
+          <ul id="fixedList"></ul>
+        </div>
+        <div>
+          <h3>Costos variables</h3>
+          <form id="variableForm"><input name="item" placeholder="Item" required /><input name="cost" placeholder="Costo" type="number" step="0.01" required /><button>Agregar</button></form>
+          <ul id="variableList"></ul>
+        </div>
+      </div>
+      <div class="settings">
+        <h3>Ajustes</h3>
+        <label>Margen por defecto % <input id="defaultMargin" type="number" /></label>
+        <label>Costo fijo por unidad por defecto <input id="defaultFixedShare" type="number" step="0.01" /></label>
+        <label>Umbral stock bajo <input id="stockThreshold" type="number" /></label>
+        <button id="saveSettings">Guardar ajustes</button>
+      </div>
+    </section>
+
+    <section id="pricing" class="tab" style="display:none">
+      <h2>Pricing</h2>
+      <form id="pricingCalc"><input id="priceProductId" placeholder="ProductID" required /><button>Calcular precio</button></form>
+      <pre id="pricingResult"></pre>
+      <button id="refreshPricing">Actualizar tabla pricing</button>
+      <table id="pricingTable"><thead><tr><th>ID</th><th>Nombre</th><th>Costo</th><th>Costo fijo</th><th>Margen%</th><th>Precio sugerido</th><th>Profit</th></tr></thead><tbody></tbody></table>
+    </section>
+
+    <section id="combos" class="tab" style="display:none">
+      <h2>Combos</h2>
+      <form id="comboForm">
+        <input id="comboIds" placeholder="IDs separados por coma (ej: LAM20B,IMTIRA)" />
+        <input id="comboQtys" placeholder="Cantidades (ej: 1,2)" />
+        <input id="comboDiscount" placeholder="Descuento %" type="number" />
+        <button>Calcular combo</button>
+      </form>
+      <pre id="comboResult"></pre>
+    </section>
+  </main>
+
+  <footer>
+    <small>Datos guardados localmente en tu navegador (localStorage).</small>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>

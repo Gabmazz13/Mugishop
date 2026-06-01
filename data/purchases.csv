@@ -1,0 +1,3 @@
+Date,PurchaseID,ProductID,Name,Size,Quantity,UnitCost,Total,Supplier
+2026-04-28,PUR-001,C20X30,Cuadro metalico 20x30,20x30,10,15.00,150.00,Proveedor X
+2026-04-28,PUR-002,IM_RED,Iman redondo grande,Ø3cm,100,0.20,20.00,Proveedor Y
